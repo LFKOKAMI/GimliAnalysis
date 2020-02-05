@@ -88,9 +88,6 @@ public:
 	void loadAndValueConstraint(GRBVar& a, GRBVar& b, GRBVar& c, GRBVar& d, GRBVar& e, GRBModel& model);
 	void loadORValueConstraint(GRBVar& a, GRBVar& b, GRBVar& c, GRBVar& d, GRBVar& e, GRBModel& model);
 
-	//model the whole state
-	void findCorrectDifferential(int bound);
-
 	//find compatible message pair using message modification
 	void wordToBit(UINT32 word, bool* bitArray);
 	void extraLinearRelationsFromX(int bitPos, bool* IX, bool* IY, bool* IZ, bool* OX,int pos[],int coef[],bool &value);
