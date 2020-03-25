@@ -2158,16 +2158,16 @@ void Gimli::searchCollision4RPattern() {
 			modelZUpdate(model, d[r][0], d[r][1], d[r][2], d[r + 1][2], dn[r][2], v[r][1], v[r][2]);
 
 			modelXValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][0]);
-			modelXValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][1]);
-			modelXValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][2]);
+			modelYValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][1]);
+			modelZValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][2]);
 
 			modelXUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][3], dn[r][3], v[r][3], v[r][4]);
 			modelYUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][4], dn[r][4], v[r][3], v[r][5]);
 			modelZUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][5], dn[r][5], v[r][4], v[r][5]);
 
 			modelXValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][3]);
-			modelXValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][4]);
-			modelXValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][5]);
+			modelYValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][4]);
+			modelZValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][5]);
 		}
 		if (r == 1) {//Big-Swap
 			modelXUpdate(model, d[r][0], d[r][1], d[r][2], d[r + 1][3], dn[r][0], v[r][0], v[r][1]);
@@ -2175,16 +2175,16 @@ void Gimli::searchCollision4RPattern() {
 			modelZUpdate(model, d[r][0], d[r][1], d[r][2], d[r + 1][2], dn[r][2], v[r][1], v[r][2]);
 
 			modelXValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][3]);
-			modelXValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][1]);
-			modelXValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][2]);
+			modelYValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][1]);
+			modelZValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][2]);
 
 			modelXUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][0], dn[r][3], v[r][3], v[r][4]);
 			modelYUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][4], dn[r][4], v[r][3], v[r][5]);
 			modelZUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][5], dn[r][5], v[r][4], v[r][5]);
 
 			modelXValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][0]);
-			modelXValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][4]);
-			modelXValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][5]);
+			modelYValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][4]);
+			modelZValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][5]);
 		}
 	}
 
@@ -2293,16 +2293,16 @@ void Gimli::searchCollision3RPattern() {
 			modelZUpdate(model, d[r][0], d[r][1], d[r][2], d[r + 1][2], dn[r][2], v[r][1], v[r][2]);
 
 			modelXValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][0]);
-			modelXValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][1]);
-			modelXValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][2]);
+			modelYValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][1]);
+			modelZValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][2]);
 
 			modelXUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][3], dn[r][3], v[r][3], v[r][4]);
 			modelYUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][4], dn[r][4], v[r][3], v[r][5]);
 			modelZUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][5], dn[r][5], v[r][4], v[r][5]);
 
 			modelXValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][3]);
-			modelXValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][4]);
-			modelXValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][5]);
+			modelYValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][4]);
+			modelZValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][5]);
 		}
 		if (r == 1) {//Big-Swap
 			modelXUpdate(model, d[r][0], d[r][1], d[r][2], d[r + 1][3], dn[r][0], v[r][0], v[r][1]);
@@ -2310,16 +2310,16 @@ void Gimli::searchCollision3RPattern() {
 			modelZUpdate(model, d[r][0], d[r][1], d[r][2], d[r + 1][2], dn[r][2], v[r][1], v[r][2]);
 
 			modelXValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][3]);
-			modelXValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][1]);
-			modelXValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][2]);
+			modelYValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][1]);
+			modelZValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][2]);
 
 			modelXUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][0], dn[r][3], v[r][3], v[r][4]);
 			modelYUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][4], dn[r][4], v[r][3], v[r][5]);
 			modelZUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][5], dn[r][5], v[r][4], v[r][5]);
 
 			modelXValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][0]);
-			modelXValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][4]);
-			modelXValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][5]);
+			modelYValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][4]);
+			modelZValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][5]);
 		}
 	}
 
