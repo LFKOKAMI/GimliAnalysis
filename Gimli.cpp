@@ -2207,8 +2207,8 @@ void Gimli::searchCollision4RPattern() {
 
 	model.optimize();
 
-	UINT32 value[3];
-	UINT32 state[3];
+	UINT32 value[6];
+	UINT32 state[6];
 	for (int r = 0; r < rounds; r++) {
 		for (int b = 0; b < 6; b++) {
 			value[b] = 0;
