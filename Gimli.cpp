@@ -2115,24 +2115,33 @@ void Gimli::searchCollision4RPattern() {
 	//env.set(GRB_IntParam_OutputFlag, 0);
 	env.set(GRB_IntParam_Threads, 3);
 	GRBModel model = GRBModel(env);
+	vector<vector<GRBVar> > ac;//before constant addition
 	vector<vector<vector<GRBVar> > > d;//difference
 	vector<vector<vector<GRBVar> > > dn;//difference of nonlinear part
 	vector<vector<vector<GRBVar> > > v;//value
 	int rounds = 5;
-
+	int start = 23;
+	int end = 19;
 	d.resize(rounds);
 	dn.resize(rounds);
 	v.resize(rounds);
-
+	ac.resize(6);//6 in total
 	int variableNum = 32;
-	for (int i = 0; i < rounds; i++) {
-		d[i].resize(6);
-		v[i].resize(6);
-		dn[i].resize(6);
+
+	for (int i = 0; i < 6; i++) {
+		ac[i].resize(variableNum);
+		for (int j = 0; j < 32; j++) {
+			ac[i][j] = model.addVar(0.0, 1.0, 0.0, GRB_BINARY);
+		}
 	}
 
+	for (int i = 0; i < rounds; i++) {
+		d[i].resize(12);
+		v[i].resize(12);
+		dn[i].resize(12);
+	}
 	for (int r = 0; r < rounds; r++) {
-		for (int b = 0; b < 6; b++) {
+		for (int b = 0; b < 12; b++) {
 			d[r][b].resize(variableNum);
 			v[r][b].resize(variableNum);
 			dn[r][b].resize(variableNum);
@@ -2140,7 +2149,7 @@ void Gimli::searchCollision4RPattern() {
 	}
 
 	for (int r = 0; r < rounds; r++) {
-		for (int b = 0; b < 6; b++) {
+		for (int b = 0; b < 12; b++) {
 			for (int z = 0; z < variableNum; z++) {
 				dn[r][b][z] = model.addVar(0.0, 1.0, 0.0, GRB_BINARY);
 				d[r][b][z] = model.addVar(0.0, 1.0, 0.0, GRB_BINARY);
@@ -2149,68 +2158,160 @@ void Gimli::searchCollision4RPattern() {
 		}
 	}
 
-	//write inequalities
-	//SP->(SP-B_SW)->(SP)->(SP)
-	for (int r = 0; r < 4; r++) {
-		if (r == 0 || r==2 || r==3) {
-			modelXUpdate(model, d[r][0], d[r][1], d[r][2], d[r + 1][0], dn[r][0], v[r][0], v[r][1]);
+	int r = 0;
+	for (int i = start; i > end; i--) {
+		r = start - i;
+		if (i % 4 == 0) {//Small swap
+			modelXUpdate(model, d[r][0], d[r][1], d[r][2], d[r + 1][3], dn[r][0], v[r][0], v[r][1]);//small swap
 			modelYUpdate(model, d[r][0], d[r][1], d[r][2], d[r + 1][1], dn[r][1], v[r][0], v[r][2]);
 			modelZUpdate(model, d[r][0], d[r][1], d[r][2], d[r + 1][2], dn[r][2], v[r][1], v[r][2]);
-
-			modelXValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][0]);
-			modelYValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][1]);
-			modelZValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][2]);
-
-			modelXUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][3], dn[r][3], v[r][3], v[r][4]);
-			modelYUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][4], dn[r][4], v[r][3], v[r][5]);
-			modelZUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][5], dn[r][5], v[r][4], v[r][5]);
-
-			modelXValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][3]);
-			modelYValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][4]);
-			modelZValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][5]);
-		}
-		if (r == 1) {//Big-Swap
-			modelXUpdate(model, d[r][0], d[r][1], d[r][2], d[r + 1][3], dn[r][0], v[r][0], v[r][1]);
-			modelYUpdate(model, d[r][0], d[r][1], d[r][2], d[r + 1][1], dn[r][1], v[r][0], v[r][2]);
-			modelZUpdate(model, d[r][0], d[r][1], d[r][2], d[r + 1][2], dn[r][2], v[r][1], v[r][2]);
-
-			modelXValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][3]);
-			modelYValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][1]);
-			modelZValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][2]);
 
 			modelXUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][0], dn[r][3], v[r][3], v[r][4]);
 			modelYUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][4], dn[r][4], v[r][3], v[r][5]);
 			modelZUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][5], dn[r][5], v[r][4], v[r][5]);
 
-			modelXValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][0]);
+			modelXUpdate(model, d[r][6], d[r][7], d[r][8], d[r + 1][9], dn[r][6], v[r][6], v[r][7]);//small swap
+			modelYUpdate(model, d[r][6], d[r][7], d[r][8], d[r + 1][7], dn[r][7], v[r][6], v[r][8]);
+			modelZUpdate(model, d[r][6], d[r][7], d[r][8], d[r + 1][8], dn[r][8], v[r][7], v[r][8]);
+
+			modelXUpdate(model, d[r][9], d[r][10], d[r][11], d[r + 1][6], dn[r][9], v[r][9], v[r][10]);
+			modelYUpdate(model, d[r][9], d[r][10], d[r][11], d[r + 1][10], dn[r][10], v[r][9], v[r][11]);
+			modelZUpdate(model, d[r][9], d[r][10], d[r][11], d[r + 1][11], dn[r][11], v[r][10], v[r][11]);
+		}
+		else if (i % 2 == 0) {//Big swap
+			modelXUpdate(model, d[r][0], d[r][1], d[r][2], d[r + 1][6], dn[r][0], v[r][0], v[r][1]);//big swap
+			modelYUpdate(model, d[r][0], d[r][1], d[r][2], d[r + 1][1], dn[r][1], v[r][0], v[r][2]);
+			modelZUpdate(model, d[r][0], d[r][1], d[r][2], d[r + 1][2], dn[r][2], v[r][1], v[r][2]);
+
+			modelXUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][9], dn[r][3], v[r][3], v[r][4]);
+			modelYUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][4], dn[r][4], v[r][3], v[r][5]);
+			modelZUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][5], dn[r][5], v[r][4], v[r][5]);
+
+			modelXUpdate(model, d[r][6], d[r][7], d[r][8], d[r + 1][0], dn[r][6], v[r][6], v[r][7]);//big swap
+			modelYUpdate(model, d[r][6], d[r][7], d[r][8], d[r + 1][7], dn[r][7], v[r][6], v[r][8]);
+			modelZUpdate(model, d[r][6], d[r][7], d[r][8], d[r + 1][8], dn[r][8], v[r][7], v[r][8]);
+
+			modelXUpdate(model, d[r][9], d[r][10], d[r][11], d[r + 1][3], dn[r][9], v[r][9], v[r][10]);
+			modelYUpdate(model, d[r][9], d[r][10], d[r][11], d[r + 1][10], dn[r][10], v[r][9], v[r][11]);
+			modelZUpdate(model, d[r][9], d[r][10], d[r][11], d[r + 1][11], dn[r][11], v[r][10], v[r][11]);
+		}
+		else {//No swap
+			modelXUpdate(model, d[r][0], d[r][1], d[r][2], d[r + 1][0], dn[r][0], v[r][0], v[r][1]);//big swap
+			modelYUpdate(model, d[r][0], d[r][1], d[r][2], d[r + 1][1], dn[r][1], v[r][0], v[r][2]);
+			modelZUpdate(model, d[r][0], d[r][1], d[r][2], d[r + 1][2], dn[r][2], v[r][1], v[r][2]);
+
+			modelXUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][3], dn[r][3], v[r][3], v[r][4]);
+			modelYUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][4], dn[r][4], v[r][3], v[r][5]);
+			modelZUpdate(model, d[r][3], d[r][4], d[r][5], d[r + 1][5], dn[r][5], v[r][4], v[r][5]);
+
+			modelXUpdate(model, d[r][6], d[r][7], d[r][8], d[r + 1][6], dn[r][6], v[r][6], v[r][7]);//big swap
+			modelYUpdate(model, d[r][6], d[r][7], d[r][8], d[r + 1][7], dn[r][7], v[r][6], v[r][8]);
+			modelZUpdate(model, d[r][6], d[r][7], d[r][8], d[r + 1][8], dn[r][8], v[r][7], v[r][8]);
+
+			modelXUpdate(model, d[r][9], d[r][10], d[r][11], d[r + 1][9], dn[r][9], v[r][9], v[r][10]);
+			modelYUpdate(model, d[r][9], d[r][10], d[r][11], d[r + 1][10], dn[r][10], v[r][9], v[r][11]);
+			modelZUpdate(model, d[r][9], d[r][10], d[r][11], d[r + 1][11], dn[r][11], v[r][10], v[r][11]);
+		}
+
+		//model value transition
+		if (i % 4 == 0) {//Small swap (and constant addition)
+			modelXValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][3]);//small_swap
+			modelYValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][1]);
+			modelZValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][2]);
+
+			//before v[r+1][0], there is a constant addition and we need to consider it.
+			//ac[6-i/4]-> v[r+1][0]
+			//modelXValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][0]);//small_swap
+			modelXValueUpdate(model, v[r][3], v[r][4], v[r][5], ac[6 - i / 4]);//small_swap
+			//ac -> v[r+1][0]
+			for (int j = 0; j < 32; j++) {
+				if (constant[6 - i / 4][j] == 0) {
+					model.addConstr(ac[6 - i / 4][j] == v[r + 1][0][j]);
+				}
+				else {
+					model.addConstr(ac[6 - i / 4][j] + v[r + 1][0][j] == 1);
+				}
+			}
 			modelYValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][4]);
 			modelZValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][5]);
+
+			modelXValueUpdate(model, v[r][6], v[r][7], v[r][8], v[r + 1][9]);//small_swap
+			modelYValueUpdate(model, v[r][6], v[r][7], v[r][8], v[r + 1][7]);
+			modelZValueUpdate(model, v[r][6], v[r][7], v[r][8], v[r + 1][8]);
+
+			modelXValueUpdate(model, v[r][9], v[r][10], v[r][11], v[r + 1][6]);//small_swap
+			modelYValueUpdate(model, v[r][9], v[r][10], v[r][11], v[r + 1][10]);
+			modelZValueUpdate(model, v[r][9], v[r][10], v[r][11], v[r + 1][11]);
+		}
+		else if (i % 2 == 0) {
+			modelXValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][6]);//small_swap
+			modelYValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][1]);
+			modelZValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][2]);
+
+			modelXValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][9]);//small_swap
+			modelYValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][4]);
+			modelZValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][5]);
+
+			modelXValueUpdate(model, v[r][6], v[r][7], v[r][8], v[r + 1][0]);//small_swap
+			modelYValueUpdate(model, v[r][6], v[r][7], v[r][8], v[r + 1][7]);
+			modelZValueUpdate(model, v[r][6], v[r][7], v[r][8], v[r + 1][8]);
+
+			modelXValueUpdate(model, v[r][9], v[r][10], v[r][11], v[r + 1][3]);//small_swap
+			modelYValueUpdate(model, v[r][9], v[r][10], v[r][11], v[r + 1][10]);
+			modelZValueUpdate(model, v[r][9], v[r][10], v[r][11], v[r + 1][11]);
+		}
+		else {
+			modelXValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][0]);
+			modelYValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][1]);
+			modelZValueUpdate(model, v[r][0], v[r][1], v[r][2], v[r + 1][2]);
+
+			modelXValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][3]);
+			modelYValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][4]);
+			modelZValueUpdate(model, v[r][3], v[r][4], v[r][5], v[r + 1][5]);
+
+			modelXValueUpdate(model, v[r][6], v[r][7], v[r][8], v[r + 1][6]);//(There is a contradiction)
+			modelYValueUpdate(model, v[r][6], v[r][7], v[r][8], v[r + 1][7]);
+			modelZValueUpdate(model, v[r][6], v[r][7], v[r][8], v[r + 1][8]);
+
+			modelXValueUpdate(model, v[r][9], v[r][10], v[r][11], v[r + 1][9]);
+			modelYValueUpdate(model, v[r][9], v[r][10], v[r][11], v[r + 1][10]);
+			modelZValueUpdate(model, v[r][9], v[r][10], v[r][11], v[r + 1][11]);
 		}
 	}
 
+	//loadConstraint
 	GRBLinExpr sum0 = 0;
 	for (int i = 0; i < 32; i++) {
-		sum0 += d[0][3][i];
+		sum0 += d[0][9][i];
 	}
 	model.addConstr(sum0 >= 1);
 
-	loadConstraintOnTheOutputSingleDifference(model, d[0][0], 0);
-	loadConstraintOnTheOutputSingleDifference(model, d[0][1], 0);
-	loadConstraintOnTheOutputSingleDifference(model, d[0][2], 0);
-	loadConstraintOnTheOutputSingleDifference(model, d[0][4], 0);
-	loadConstraintOnTheOutputSingleDifference(model, d[0][5], 0);
-
-	loadConstraintOnTheOutputSingleDifference(model, d[2][0], 0);
-
-	loadConstraintOnTheOutputSingleDifference(model, d[4][4], 0);
-	loadConstraintOnTheOutputSingleDifference(model, d[4][5], 0);
+	for (int i = 0; i < 12; i++) {
+		if (i != 9) {
+			loadConstraintOnTheOutputSingleDifference(model, d[0][i], 0);
+		}
+	}
+	//conditional positions
+	loadConstraintOnTheOutputSingleDifference(model, d[2][3], 0);
+	loadConstraintOnTheOutputSingleDifference(model, d[4][10], 0);
+	loadConstraintOnTheOutputSingleDifference(model, d[4][11], 0);
+	//loadConstraintOnTheOutputSingleDifference(model, d[6][0], 0);
+	//loadConstraintOnTheOutputSingleDifference(model, d[8][7], 0);
+	//loadConstraintOnTheOutputSingleDifference(model, d[8][8], 0);
 
 	model.optimize();
 
-	UINT32 value[6];
-	UINT32 state[6];
+	if (model.get(GRB_IntAttr_Status) == 3) {
+		cout << "The model is infeasible" << endl;
+		return;
+	}
+
+	UINT32 value[12];
+	UINT32 state[12];
+	ofstream outFile("8r.txt");
+	cout << "Diff trail:" << endl;
 	for (int r = 0; r < rounds; r++) {
-		for (int b = 0; b < 6; b++) {
+		for (int b = 0; b < 12; b++) {
 			value[b] = 0;
 			for (int i = 0; i < 32; i++) {
 				if (d[r][b][i].get(GRB_DoubleAttr_X) == 1) {
@@ -2219,15 +2320,22 @@ void Gimli::searchCollision4RPattern() {
 			}
 		}
 		//output value
-		for (int i = 0; i < 6; i++) {
-			cout << hex << value[i] << " ";
+		for (int i = 0; i < 3; i++) {
+			for (int col = 0; col < 4; col++) {
+				cout<< hex << setw(9) << value[i + col * 3] << " ";
+				outFile << hex <<setw(9)<< value[i + col * 3] << " ";
+			}
+			cout << endl;
+			outFile << endl;
 		}
+		outFile << endl;
 		cout << endl;
 	}
-	cout << endl;
+	outFile.close();
 
-	for (int r = 0; r < rounds; r++) {
-		for (int b = 0; b < 6; b++) {
+	cout << "Message satisfying the differential conditions:" << endl;
+	for (int r = 0; r < 1; r++) {
+		for (int b = 0; b < 12; b++) {
 			value[b] = 0;
 			for (int i = 0; i < 32; i++) {
 				if (v[r][b][i].get(GRB_DoubleAttr_X) == 1) {
@@ -2235,13 +2343,20 @@ void Gimli::searchCollision4RPattern() {
 				}
 			}
 		}
+		if (r == 0) {
+			for (int i = 0; i < 12; i++) {
+				state[i] = value[i];
+			}
+		}
 		//output value
-		for (int i = 0; i < 6; i++) {
-			cout << hex << value[i] << " ";
+		for (int i = 0; i < 3; i++) {
+			for (int col = 0; col < 4; col++) {
+				cout << hex << setw(9) << value[i + col * 3] << " ";
+			}
+			cout << endl;
 		}
 		cout << endl;
 	}
-	cout << endl;
 }
 
 //Check the validity of the differential pattern (7 rounds)
