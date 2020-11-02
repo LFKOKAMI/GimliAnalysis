@@ -37,7 +37,7 @@ Gimli::Gimli() {
 		if (i % 4 == 0) {
 			value = 0x9e377900 ^ i;
 			for (int j = 0; j < 32; j++) {
-				constant[6 - i / 24][j] = (value >> j) & 0x1;
+				constant[6 - i / 4][j] = (value >> j) & 0x1;
 			}
 		}
 	}
